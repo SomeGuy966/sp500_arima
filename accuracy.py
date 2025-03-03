@@ -5,8 +5,9 @@ of the model. The model forecasts one month at a time for every month
 between 1975-2025 using one year’s worth of data prior to that month
 to train the model.
 
-Then it calculates MAPE for the forecasts vs. the real prices, and
-saves the calculated monthly MAPE to a .csv file called "monthly_MAPE.csv"
+Then it calculates MAPE for the forecasts vs. the real prices for that month
+and calculates the average MAPE for the entire 1975-2025 period. It then saves the
+calculated monthly MAPE to a .csv file called "monthly_MAPE.csv"
 '''
 
 
@@ -72,10 +73,12 @@ for i in range(0, m):
     start_date += relativedelta(months=1)
 
 
+# Averaging the errors and printing to console
 error = error/m
 print(f"Monthly MAPE from 1975-2025: {error}")
 
 
+# Saving monthly MAPE from 1975-2025 to "monmthly_MAPE.csv"
 df = pd.DataFrame({
 	'MAPE': [error]
 })
