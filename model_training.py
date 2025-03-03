@@ -8,6 +8,11 @@ data.
 It then saves this model to the 'arima_model.pkl' pickle file.
 '''
 
+# Global imports: these packages are used in the "train_model" function,
+# so I import them here instead of in the function.
+from statsmodels.tsa.arima.model import ARIMA
+import pmdarima as pm
+import warnings
 
 
 def data_download(start_date, end_date):
@@ -45,12 +50,8 @@ def augmented_dickey_fuller_test(time_series_data):
         return time_series_data.diff()
     else:
         print("PASSED: p-value below significance level\n")
-
 def train_model(data):
     # Step 1: Determining best parameters for the ARIMA model
-    import pmdarima as pm
-    import warnings
-
     warnings.filterwarnings("ignore")
 
     model_auto = pm.auto_arima(data,  # Input training data
@@ -71,7 +72,7 @@ def train_model(data):
     p, d, q = optimal_order  # Unpacking the 3-tuple to get best parameters
 
     # Step 2: Training the model
-    from statsmodels.tsa.arima.model import ARIMA
+
 
     model_generated = ARIMA(data, order=(p, d, q))
     model = model_generated.fit()

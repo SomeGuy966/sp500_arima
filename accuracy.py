@@ -1,18 +1,15 @@
 '''
 README:
-This code predicts the mean average percent error (MAPE)
-of the model trying to predict the price one month out
-over the course of 1975 - 2025.
+This program calculates the mean average percent error (MAPE)
+of the model. The model forecasts one month at a time for every month
+between 1975-2025 using one year’s worth of data prior to that month
+to train the model.
 
-It gathers data one year before the month and then forecasts
-the S&P price for that month. Then it calculates MAPE
-for the forecasts vs. the real prices
-
-It then saves the calculated monthly MAPE to a .csv
-file called monthly_MAPE.csv
+Then it calculates MAPE for the forecasts vs. the real prices, and
+saves the calculated monthly MAPE to a .csv file called "monthly_MAPE.csv"
 '''
 
-import pickle
+
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
