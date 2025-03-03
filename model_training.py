@@ -46,56 +46,88 @@ def augmented_dickey_fuller_test(time_series_data):
     else:
         print("PASSED: p-value below significance level\n")
 
+def train_model(data):
+    # Step 1: Determining best parameters for the ARIMA model
+    import pmdarima as pm
+    import warnings
 
-# Step 1: Determining best parameters for the ARIMA model
-import pmdarima as pm
-import pandas as pd
-from pmdarima.model_selection import train_test_split
+    warnings.filterwarnings("ignore")
 
-sp500_data = pd.read_csv('sp_parsed.csv')# Reading the data; sets 1st column (Dates) as index
-sp500_data['Date'] = pd.to_datetime(sp500_data['Date'])
-sp500_data.set_index('Date', inplace=True)
+    model_auto = pm.auto_arima(data,  # Input training data
+                               start_p=0,  # Starting autoregressive order
+                               start_q=0,  # Starting moving average order
+                               max_p=5,  # Max autoregressive order
+                               max_q=5,  # Max moving average order
+                               d=1,  # Number of differencing steps
+                               seasonal=False,  # Data doesn't have patterns repeated over time
+                               trace=False,  # Prints model parameters while training
+                               error_action='ignore',  # When model encounters error, "skips" the error
+                               suppress_warnings=False,  # When warnings appear while training, they're ignored
+                               random_state=0,
+                               n_fits=50
+                               )
 
+    optimal_order = model_auto.order  # Accessing .order attribute to find optimal order
+    p, d, q = optimal_order  # Unpacking the 3-tuple to get best parameters
 
-y_train, y_test = train_test_split(sp500_data['Close'], train_size=0.8)  # Splits the data into 80% train/20% test
+    # Step 2: Training the model
+    from statsmodels.tsa.arima.model import ARIMA
 
+    model_generated = ARIMA(data, order=(p, d, q))
+    model = model_generated.fit()
 
-model_auto = pm.auto_arima(y_train,                # Input training data
-                           start_p=0,              # Starting autoregressive order
-                           start_q=0,              # Starting moving average order
-                           max_p=5,                # Max autoregressive order
-                           max_q=5,                # Max moving average order
-                           d=1,                    # Number of differencing steps
-                           seasonal=False,         # Data doesn't have patterns repeated over time
-                           trace=True,             # Prints model parameters while training
-                           error_action='ignore',  # When model encounters error, "skips" the error
-                           suppress_warnings=True, # When warnings appear while training, they're ignored
-                           random_state=0,
-                           n_fits=50
-                            )
+    return model
 
+if __name__ == "__main__":
+    # Step 1: Determining best parameters for the ARIMA model
+    import pmdarima as pm
+    import pandas as pd
+    from pmdarima.model_selection import train_test_split
 
-
-optimal_order = model_auto.order   # Accessing .order attribute to find optimal order
-p, d, q = optimal_order            # Unpacking the 3-tuple to get best parameters
-
-
-
-
-# Step 2: Training the model
-from statsmodels.tsa.arima.model import ARIMA
-
-model_generated = ARIMA(y_train, order=(p, d, q))
-model = model_generated.fit()
-model.summary()
-
+    sp500_data = pd.read_csv('sp_parsed.csv')# Reading the data; sets 1st column (Dates) as index
+    sp500_data['Date'] = pd.to_datetime(sp500_data['Date'])
+    sp500_data.set_index('Date', inplace=True)
 
 
-# Step 3: Saving the trained model
-import pickle
-
-with open("arima_model.pkl", "wb") as f:
-    pickle.dump(model, f)
+    y_train, y_test = train_test_split(sp500_data['Close'], train_size=0.8)  # Splits the data into 80% train/20% test
 
 
-print('\n\nModel saved to "arima_model.pkl"!')
+    model_auto = pm.auto_arima(y_train,                # Input training data
+                               start_p=0,              # Starting autoregressive order
+                               start_q=0,              # Starting moving average order
+                               max_p=5,                # Max autoregressive order
+                               max_q=5,                # Max moving average order
+                               d=1,                    # Number of differencing steps
+                               seasonal=False,         # Data doesn't have patterns repeated over time
+                               trace=True,             # Prints model parameters while training
+                               error_action='ignore',  # When model encounters error, "skips" the error
+                               suppress_warnings=True, # When warnings appear while training, they're ignored
+                               random_state=0,
+                               n_fits=50
+                                )
+
+
+
+    optimal_order = model_auto.order   # Accessing .order attribute to find optimal order
+    p, d, q = optimal_order            # Unpacking the 3-tuple to get best parameters
+
+
+
+
+    # Step 2: Training the model
+    from statsmodels.tsa.arima.model import ARIMA
+
+    model_generated = ARIMA(y_train, order=(p, d, q))
+    model = model_generated.fit()
+    model.summary()
+
+
+
+    # Step 3: Saving the trained model
+    import pickle
+
+    with open("arima_model.pkl", "wb") as f:
+        pickle.dump(model, f)
+
+
+    print('\n\nModel saved to "arima_model.pkl"!')
