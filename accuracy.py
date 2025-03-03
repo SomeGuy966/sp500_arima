@@ -2,10 +2,14 @@
 README:
 This code predicts the mean average percent error (MAPE)
 of the model trying to predict the price one month out
-over the course of April 1975 - February 2025.
+over the course of 1975 - 2025.
 
-It saves all predictions to a DataFrame, which it then uses
-to calculate MAPE
+It gathers data one year before the month and then forecasts
+the S&P price for that month. Then it calculates MAPE
+for the forecasts vs. the real prices
+
+It then saves the calculated monthly MAPE to a .csv
+file called monthly_MAPE.csv
 '''
 
 import pickle
@@ -48,8 +52,12 @@ for i in range(0, m):
     monthly_data = sp500[(sp500.index.month == start_date.month) & (sp500.index.year == start_date.year)]
     monthly_data = monthly_data['Close']
 
-    filtered_data = sp500[(sp500.index < start_date)]
+    filtered_data = sp500[
+        (sp500.index >= (start_date - relativedelta(years=1))) &
+        (sp500.index < start_date)
+        ]
     filtered_data = filtered_data['Close']
+
 
     model = train_model(filtered_data)
 
@@ -70,5 +78,11 @@ for i in range(0, m):
 error = error/m
 print(f"Monthly MAPE from 1975-2025: {error}")
 
+
+df = pd.DataFrame({
+	'MAPE': [error]
+})
+
+df.to_csv('monthly_MAPE.csv', index=False)
 
 
