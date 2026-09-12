@@ -81,8 +81,8 @@ The bottom panel is the ARIMA − random-walk gap: it oscillates around zero and
 persistently negative.*
 
 <p align="center">
-  <img src="reports/figures/coverage_by_horizon.png" width="620" alt="Empirical coverage of 95% prediction intervals by forecast horizon">
-  <img src="reports/figures/order_counts.png" width="620" alt="How often each ARIMA specification was selected by AIC">
+  <img src="reports/figures/coverage_by_horizon.png" width="440" alt="Empirical coverage of 95% prediction intervals by forecast horizon">
+  <img src="reports/figures/order_counts.png" width="440" alt="How often each ARIMA specification was selected by AIC">
 </p>
 
 *Left: 95 % intervals cover only ~91 % of one-day-ahead outcomes — Gaussian intervals miss
