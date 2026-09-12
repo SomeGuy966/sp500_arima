@@ -80,7 +80,8 @@ ignore = [
 convention = "numpy"
 
 [tool.mypy]
-python_version = "3.11"
+# No python_version override: numpy >= 2.5 stubs use PEP 695 syntax that mypy
+# only accepts when checking as 3.12+; the CI test matrix covers 3.11 at runtime.
 strict = true
 warn_unreachable = true
 files = ["src"]
