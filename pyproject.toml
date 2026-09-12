@@ -1,0 +1,108 @@
+[project]
+name = "sp500-arima"
+version = "1.0.0"
+description = "Walk-forward evaluation of ARIMA forecasts on the S&P 500 against random-walk baselines"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Anthony Ge" }]
+requires-python = ">=3.11,<3.14"
+keywords = ["arima", "time-series", "forecasting", "quant", "backtest", "sp500"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Office/Business :: Financial :: Investment",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+  "statsmodels>=0.15",
+  "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+fetch = ["yfinance>=0.2.40"]
+dev = [
+  "pytest>=8.3",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "pandas-stubs>=2.2",
+]
+
+[project.scripts]
+sp500-arima = "sp500_arima.cli:main"
+
+[project.urls]
+Repository = "https://github.com/SomeGuy966/sp500_arima"
+
+[tool.poetry]
+packages = [{ include = "sp500_arima", from = "src" }]
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+# --------------------------------------------------------------------------- #
+# Tooling
+# --------------------------------------------------------------------------- #
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E", "F", "W",   # pycodestyle / pyflakes
+  "I",             # isort
+  "B",             # bugbear
+  "UP",            # pyupgrade
+  "N",             # pep8-naming
+  "SIM",           # simplify
+  "RUF",           # ruff-specific
+  "D",             # pydocstyle
+]
+ignore = [
+  "D100", "D104",  # module / package docstrings not required
+  "D203", "D213",  # conflicting pydocstyle conventions
+  "RUF012",
+  "RUF001",        # typographic ×, −, – in chart labels are deliberate
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+files = ["src"]
+plugins = []
+
+[[tool.mypy.overrides]]
+module = ["statsmodels.*", "scipy.*", "matplotlib.*", "yfinance.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = [
+  "ignore::statsmodels.tools.sm_exceptions.ConvergenceWarning",
+  "ignore::statsmodels.tools.sm_exceptions.ValueWarning",
+  "ignore::UserWarning:statsmodels",
+]
+
+[tool.coverage.run]
+source = ["sp500_arima"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
