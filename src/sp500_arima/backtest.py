@@ -271,7 +271,7 @@ class BacktestResult:
                 "model": model,
                 "label": MODEL_LABELS.get(model, model),
                 "folds": int(mine.shape[0]),
-                "days": int(len(block)),
+                "days": len(block),
                 "path_mape": mape(a, block["path"]),
                 "path_mape_monthly_mean": float(mine["path_mape"].mean()),
                 "path_rmse_pct": _rmse_pct(a, block["path"]),
